@@ -6,9 +6,12 @@ from apps.authentication.services.auth_service import AuthService
 from drf_spectacular.utils import extend_schema
 from apps.authentication.serializers.login_serializer import LoginSerializer
 
+from apps.authentication.throttles import LoginRateThrottle
+
 class LoginView(APIView):
     # Todos pueden intentar inciar sesion
     permission_classes = [AllowAny] 
+    throttle_classes = [LoginRateThrottle]
 
     @extend_schema(
         request=LoginSerializer,

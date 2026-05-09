@@ -216,7 +216,9 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "anon": "20/hour",
         "user": "200/hour",
+        "login": "5/minute",
     },
+    "EXCEPTION_HANDLER": "inventrack.exceptions.custom_exception_handler",
 }
 
 # --------------------------------------------------
@@ -272,15 +274,20 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = list(default_headers) + ["authorization"]
 
 # --------------------------------------------------
-# EMAIL (opcional – recuperación de contraseña)
+# EMAIL (recuperación de contraseña)
 # --------------------------------------------------
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-#EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-#EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-#EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
-#EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-#EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-#DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+# Usa SMTP si no estamos en modo debug local
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 
 # --------------------------------------------------
 # FRONTEND
